@@ -1,13 +1,20 @@
 using Microsoft.AspNetCore.Diagnostics;
+using UserManagementAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>(); // First
+app.UseMiddleware<AuthenticationMiddleware>(); // Second
+app.UseMiddleware<LoggingMiddleware>(); // Third
 app.UseExceptionHandler("/error");
 app.Map("/error", (HttpContext context) => 
 {
