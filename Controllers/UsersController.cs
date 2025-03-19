@@ -27,8 +27,12 @@ public class UsersController : ControllerBase
 
     // POST: api/users
     [HttpPost]
-    public IActionResult CreateUser(User user)
+    public IActionResult CreateUser([FromBody] User user)
     {
+        if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
         user.Id = Users.Max(u => u.Id) + 1;
         Users.Add(user);
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
@@ -36,8 +40,12 @@ public class UsersController : ControllerBase
 
     // PUT: api/users/5
     [HttpPut("{id}")]
-    public IActionResult UpdateUser(int id, User updatedUser)
+    public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
     {
+        if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
         var user = Users.FirstOrDefault(u => u.Id == id);
         if (user == null)
             return NotFound();

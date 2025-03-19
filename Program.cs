@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseExceptionHandler("/error");
+app.Map("/error", (HttpContext context) => 
+{
+    var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+    return Results.Problem(
+        title: "Internal Server Error",
+        statusCode: StatusCodes.Status500InternalServerError
+    );
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
